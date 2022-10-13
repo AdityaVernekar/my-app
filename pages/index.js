@@ -13,6 +13,7 @@ export default function Home() {
   const [isOwner, setIsOwner] = useState(false);
   const [preSaleEnded, setPreSaleEnded] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tokensLeft, setTokensLeft] = useState("");
 
   const connectWallet = async () => {
     try {
@@ -63,19 +64,19 @@ export default function Home() {
   };
 
   const startPresale = async () => {
+    setLoading(true);
     try {
       const signer = await getProviderOrSigner(true);
 
       const nftContract = new Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer);
-      setLoading(true);
       const tx = await nftContract.startPresale();
 
       await tx.wait();
-      setLoading(false);
       setPreSaleStarted(true);
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const getOwner = async () => {
@@ -125,9 +126,26 @@ export default function Home() {
     if (presaleStarted) {
       await checkIfPresaleEnded();
     }
+
+    getRemainingTokens();
+
+    // check if presale has started
+
+    setInterval(async () => {
+      const presaleStarted = await checkIfPresaleStarted();
+
+      if (presaleStarted) {
+        await checkIfPresaleEnded();
+      }
+    }, 5000);
+
+    setInterval(async () => {
+      getRemainingTokens();
+    }, 5000);
   };
 
   const PresaleMint = async () => {
+    setLoading(true);
     try {
       const signer = await getProviderOrSigner(true);
 
@@ -140,12 +158,15 @@ export default function Home() {
       await txn.wait();
 
       alert("Congrats You minted a Crypto Dev");
+      getRemainingTokens();
     } catch (error) {
       console.error(error);
     }
+    setLoading(false);
   };
 
   const PublicMint = async () => {
+    setLoading(true);
     try {
       const signer = await getProviderOrSigner(true);
 
@@ -158,9 +179,11 @@ export default function Home() {
       await txn.wait();
 
       alert("Congrats You minted a Crypto Dev");
+      getRemainingTokens();
     } catch (error) {
       console.error(error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -173,6 +196,20 @@ export default function Home() {
       onPageLoad();
     }
   });
+
+  const getRemainingTokens = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, provider);
+
+      const remainingTokens = await nftContract.tokenIds();
+
+      setTokensLeft(remainingTokens.toString());
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const renderPage = () => {
     if (!walletConnected) {
@@ -226,7 +263,21 @@ export default function Home() {
         <title>Crypto Devs NFT Collection </title>
       </Head>
 
-      <main className={styles.main}>{renderPage()}</main>
+      <main className={styles.main}>
+        <div className={styles.div}>
+          <h1 className={styles.title}>Welcome to Crypto-Devs NFT Collection</h1>
+          <span className={styles.description}>
+            Crypto-Devs is an NFT Collection for WEB3 Developers
+          </span>
+          {renderPage()}
+          <span className={styles.description}>Tokens Minted: {tokensLeft}/20 </span>
+        </div>
+
+        <div>
+          <img className={styles.image} src="/cryptodevs/0.svg" alt="" />
+        </div>
+      </main>
+      <footer className={styles.footer}>Made with &#10084; by Crypto Devs</footer>
     </div>
   );
 }

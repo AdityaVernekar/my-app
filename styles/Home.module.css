@@ -7,6 +7,14 @@
   font-family: "Courier New", Courier, monospace;
 }
 
+.div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Courier New", Courier, monospace;
+}
+
 .footer {
   display: flex;
   padding: 2rem 0;
