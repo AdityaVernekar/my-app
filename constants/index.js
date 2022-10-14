@@ -1,5 +1,5 @@
-export const NFT_CONTRACT_ADDRESS = "0x50c40F9f290584D2EBF48DD5B28f1159e12638dc";
-export const NFT_CONTRACT_ABI = [
+export const NFT_CONTRACT_ADDRESS = "0x9E306fd283BBC9EcCb68Da76b2F3229f7074F10B";
+export const abi = [
   {
     inputs: [
       {
@@ -398,7 +398,7 @@ export const NFT_CONTRACT_ABI = [
     inputs: [
       {
         internalType: "bool",
-        name: "pause",
+        name: "val",
         type: "bool",
       },
     ],
